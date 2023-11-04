@@ -6,7 +6,7 @@ metadata:
 spec:
   compositionSelector:
     matchLabels:
-      dbengine: postgresql
+      dbengine: postgres
   parameters:
     region: westus
     storageGB: 5 #Minimum value is 5
