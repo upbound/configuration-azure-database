@@ -3,7 +3,7 @@ kind: Composition
 metadata:
   name: xpostgresqlinstances.azure.platform.upbound.io
   labels:
-    dbengine: postgresql
+    dbengine: postgres
     provider: azure
 spec:
   writeConnectionSecretsToNamespace: upbound-system
