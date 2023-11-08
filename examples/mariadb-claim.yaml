@@ -24,6 +24,6 @@ data:
   password: dXBiMHVuZHIwY2s1ITMxMzM3
 kind: Secret
 metadata:
-  name: mariadbsecret
+  name: psqlsecret
   namespace: default
 type: Opaque
