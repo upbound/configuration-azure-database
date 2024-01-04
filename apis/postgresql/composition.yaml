@@ -1,11 +1,10 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  creationTimestamp: "2024-01-04T10:23:12Z"
+  name: xpostgresqlinstances.azure.platform.upbound.io
   labels:
     dbengine: postgres
     provider: azure
-  name: xpostgresqlinstances.azure.platform.upbound.io
 spec:
   writeConnectionSecretsToNamespace: upbound-system
   compositeTypeRef:
