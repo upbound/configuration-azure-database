@@ -22,7 +22,7 @@ spec:
       version: "v0.41.0"
     - configuration: xpkg.upbound.io/upbound/configuration-azure-network
       # renovate: datasource=github-releases depName=upbound/configuration-azure-network
-      version: "v0.3.0"
+      version: "v0.4.0"
     - function: xpkg.upbound.io/upbound/function-patch-and-transform
       # renovate: datasource=github-releases depName=upbound/function-patch-and-transform
       version: "v0.2.1"
