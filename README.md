@@ -1,5 +1,3 @@
-
-
 # Azure Database Configuration
 
 
@@ -14,7 +12,7 @@ The core components of a custom API in [Crossplane](https://docs.crossplane.io/v
 
 In this specific configuration, the Azure database API contains:
 
-- **an Azure database (/apis/definition.yaml) custom resource type.**
+- **an [Azure database](/apis/definition.yaml) custom resource type.**
 - **Composition of the Azure database resources:** Configured in [/apis/composition.yaml](/apis/composition.yaml), it provisions an Azure database and resources in the `upbound-system` namespace.
 
 This repository contains an Composite Resource (XR) file.
@@ -25,9 +23,9 @@ This repository contains an Composite Resource (XR) file.
 apiVersion: pkg.crossplane.io/v1
 kind: Configuration
 metadata:
-  name: PACKAGE NAME
+  name: configuration-azure-database
 spec:
-  package: PACKAGE SPEC
+  package: xpkg.upbound.io/upbound/configuration-azure-database:v0.5.0
 ```
 
 ## Next steps
