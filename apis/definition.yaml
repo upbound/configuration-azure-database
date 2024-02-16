@@ -45,6 +45,10 @@ spec:
                       default: default
                     storageGB:
                       type: integer
+                      description: Database size
+                    version:
+                      type: string
+                      description: Database version
                     passwordSecretRef:
                       type: object
                       description: "A reference to the Secret object containing database password"
@@ -71,5 +75,6 @@ spec:
                   required:
                     - storageGB
                     - passwordSecretRef
+                    - version
               required:
                 - parameters

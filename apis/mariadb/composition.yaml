@@ -45,8 +45,6 @@ spec:
                   skuName: GP_Gen5_2
                   sslEnforcementEnabled: false
                   sslMinimalTlsVersionEnforced: TLSEnforcementDisabled
-                  storageMb: 5120
-                  version: "10.3"
             connectionDetails:
               - type: FromFieldPath
                 fromFieldPath: status.atProvider.fqdn
@@ -106,6 +104,9 @@ spec:
               - type: FromCompositeFieldPath
                 fromFieldPath: spec.parameters.passwordSecretRef.key
                 toFieldPath: spec.forProvider.administratorLoginPasswordSecretRef.key
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.version
+                toFieldPath: spec.forProvider.version
 
           - name: vnetrule
             base:
