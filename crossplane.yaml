@@ -11,7 +11,7 @@ metadata:
     meta.crossplane.io/readme: |
      This configuration is used for deploying and managing Azure databaseclusters on Kubernetes using Crossplane. This setup provides the necessary infrastructure to deploy Azure database resources managed with Crossplane in Kubernetes. This approach ensures a flexible, streamlined deployment workflow.
 
-     For more details and customization options, you can explore [the GitHub repository](https://github.com/upbound/configuration-app).
+     For more details and customization options, you can explore [the GitHub repository](https://github.com/upbound/configuration-azure-database).
 
 spec:
   crossplane:
