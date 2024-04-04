@@ -23,9 +23,3 @@ spec:
     - provider: xpkg.upbound.io/upbound/provider-azure-dbforpostgresql
       # renovate: datasource=github-releases depName=upbound/provider-azure
       version: "v0.42.1"
-    - configuration: xpkg.upbound.io/upbound/configuration-azure-network
-      # renovate: datasource=github-releases depName=upbound/configuration-azure-network
-      version: "v0.8.0"
-    - function: xpkg.upbound.io/crossplane-contrib/function-patch-and-transform
-      # renovate: datasource=github-releases depName=crossplane-contrib/function-patch-and-transform
-      version: "v0.4.0"
