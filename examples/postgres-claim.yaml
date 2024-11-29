@@ -3,6 +3,9 @@ kind: SQLInstance
 metadata:
   name: configuration-azure-database-db-postgresql
   namespace: default
+  annotations:
+    render.crossplane.io/composition-path: apis/postgresql/composition.yaml
+    render.crossplane.io/function-path: examples/function/function.yaml
 spec:
   compositionSelector:
     matchLabels:
