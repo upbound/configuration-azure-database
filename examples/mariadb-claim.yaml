@@ -3,6 +3,9 @@ kind: SQLInstance
 metadata:
   name: configuration-azure-database-db-mariadb
   namespace: default
+  annotations:
+    render.crossplane.io/composition-path: apis/mariadb/composition.yaml
+    render.crossplane.io/function-path: examples/function/function.yaml
 spec:
   compositionSelector:
     matchLabels:
