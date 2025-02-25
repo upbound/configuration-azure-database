@@ -3,4 +3,4 @@ kind: Configuration
 metadata:
   name: configuration-azure-database
 spec:
-  package: xpkg.upbound.io/upbound/configuration-azure-database:v0.14.0
+  package: xpkg.upbound.io/upbound/configuration-azure-database:v0.15.0
