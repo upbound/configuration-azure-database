@@ -1,0 +1,25 @@
+apiVersion: meta.dev.upbound.io/v1alpha1
+kind: Project
+metadata:
+  name: configuration-azure-database
+spec:
+  dependsOn:
+  - provider: xpkg.upbound.io/upbound/provider-azure-dbformariadb
+    version: v1
+  - provider: xpkg.upbound.io/upbound/provider-azure-dbforpostgresql
+    version: v1
+  - configuration: xpkg.upbound.io/upbound/configuration-azure-network
+    version: v0.15.0
+  - function: xpkg.upbound.io/crossplane-contrib/function-patch-and-transform
+    version: v0.8.2
+  - function: xpkg.upbound.io/crossplane-contrib/function-auto-ready
+    version: '>=v0.0.0'
+  description: This configuration provides a foundation to build and operate Azure databases.
+  license: Apache-2.0
+  maintainer: Upbound <support@upbound.io>
+  readme: |
+    This configuration is used for deploying and managing Azure database instances on Kubernetes using Crossplane. This setup provides the necessary infrastructure to deploy Azure database resources managed with Crossplane in Kubernetes. This approach ensures a flexible, streamlined deployment workflow.
+
+    For more details and customization options, you can explore [the GitHub repository](https://github.com/upbound/configuration-azure-database).
+  repository: xpkg.upbound.io/upbound/configuration-azure-database
+  source: github.com/upbound/configuration-azure-database

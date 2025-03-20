@@ -1,6 +1,0 @@
-apiVersion: pkg.crossplane.io/v1
-kind: Configuration
-metadata:
-  name: configuration-azure-database
-spec:
-  package: xpkg.upbound.io/upbound/configuration-azure-database:v0.15.0

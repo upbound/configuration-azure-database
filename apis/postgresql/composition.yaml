@@ -6,135 +6,14 @@ metadata:
     dbengine: postgres
     provider: azure
 spec:
-  writeConnectionSecretsToNamespace: upbound-system
   compositeTypeRef:
     apiVersion: azure.platform.upbound.io/v1alpha1
     kind: XSQLInstance
   mode: Pipeline
   pipeline:
-    - step: patch-and-transform
-      functionRef:
-        name: crossplane-contrib-function-patch-and-transform
-      input:
-        apiVersion: pt.fn.crossplane.io/v1beta1
-        kind: Resources
-        patchSets:
-          - name: providerConfigRef
-            patches:
-              - fromFieldPath: spec.parameters.providerConfigName
-                toFieldPath: spec.providerConfigRef.name
-                type: FromCompositeFieldPath
-          - name: deletionPolicy
-            patches:
-              - fromFieldPath: spec.parameters.deletionPolicy
-                toFieldPath: spec.deletionPolicy
-                type: FromCompositeFieldPath
-          - name: region
-            patches:
-              - fromFieldPath: spec.parameters.region
-                toFieldPath: spec.forProvider.location
-                type: FromCompositeFieldPath
-        resources:
-          - name: postgresqlserver
-            base:
-              apiVersion: dbforpostgresql.azure.upbound.io/v1beta1
-              kind: Server
-              spec:
-                forProvider:
-                  administratorLogin: psqladmin
-                  identity:
-                    - type: SystemAssigned
-                  infrastructureEncryptionEnabled: false
-                  skuName: GP_Gen5_2
-                  sslEnforcementEnabled: false
-                  sslMinimalTlsVersionEnforced: TLSEnforcementDisabled
-            connectionDetails:
-              - type: FromFieldPath
-                fromFieldPath: status.atProvider.fqdn
-                name: host
-              - type: FromConnectionSecretKey
-                fromConnectionSecretKey: username
-                name: username
-              - type: FromConnectionSecretKey
-                fromConnectionSecretKey: password
-                name: password
-              - type: FromConnectionSecretKey
-                fromConnectionSecretKey: port
-                name: port
-            patches:
-              - type: PatchSet
-                patchSetName: providerConfigRef
-              - type: PatchSet
-                patchSetName: deletionPolicy
-              - type: PatchSet
-                patchSetName: region
-              - type: FromCompositeFieldPath
-                fromFieldPath: spec.parameters.networkRef.id
-                toFieldPath: metadata.name
-                transforms:
-                  - type: string
-                    string:
-                      fmt: '%s-postgresql'
-                      type: Format
-              - type: FromCompositeFieldPath
-                fromFieldPath: spec.writeConnectionSecretToRef.namespace
-                toFieldPath: spec.writeConnectionSecretToRef.namespace
-              - type: FromCompositeFieldPath
-                fromFieldPath: metadata.uid
-                toFieldPath: spec.writeConnectionSecretToRef.name
-                transforms:
-                  - type: string
-                    string:
-                      fmt: '%s-postgresql'
-                      type: Format
-              - type: FromCompositeFieldPath
-                fromFieldPath: spec.parameters.storageGB
-                toFieldPath: spec.forProvider.storageMb
-                transforms:
-                  - type: math
-                    math:
-                      multiply: 1024
-                      type: Multiply
-              - type: FromCompositeFieldPath
-                fromFieldPath: spec.parameters.networkRef.id
-                toFieldPath: spec.forProvider.resourceGroupNameSelector.matchLabels[azure.platform.upbound.io/network-id]
-              - type: FromCompositeFieldPath
-                fromFieldPath: spec.parameters.passwordSecretRef.namespace
-                toFieldPath: spec.forProvider.administratorLoginPasswordSecretRef.namespace
-              - type: FromCompositeFieldPath
-                fromFieldPath: spec.parameters.passwordSecretRef.name
-                toFieldPath: spec.forProvider.administratorLoginPasswordSecretRef.name
-              - type: FromCompositeFieldPath
-                fromFieldPath: spec.parameters.passwordSecretRef.key
-                toFieldPath: spec.forProvider.administratorLoginPasswordSecretRef.key
-              - type: FromCompositeFieldPath
-                fromFieldPath: spec.parameters.version
-                toFieldPath: spec.forProvider.version
-
-          - name: vnetrule
-            base:
-              apiVersion: dbforpostgresql.azure.upbound.io/v1beta1
-              kind: VirtualNetworkRule
-              spec:
-                forProvider:
-                  serverNameSelector:
-                    matchControllerRef: true
-            patches:
-              - type: PatchSet
-                patchSetName: providerConfigRef
-              - type: PatchSet
-                patchSetName: deletionPolicy
-              - type: FromCompositeFieldPath
-                fromFieldPath: spec.parameters.networkRef.id
-                toFieldPath: metadata.name
-                transforms:
-                  - type: string
-                    string:
-                      fmt: '%s-sn-rule'
-                      type: Format
-              - type: FromCompositeFieldPath
-                fromFieldPath: spec.parameters.networkRef.id
-                toFieldPath: spec.forProvider.subnetIdSelector.matchLabels[azure.platform.upbound.io/network-id]
-              - type: FromCompositeFieldPath
-                fromFieldPath: spec.parameters.networkRef.id
-                toFieldPath: spec.forProvider.resourceGroupNameSelector.matchLabels[azure.platform.upbound.io/network-id]
+    - functionRef:
+        name: upbound-configuration-azure-databasepostgres
+      step: postgres
+    - functionRef:
+        name: crossplane-contrib-function-auto-ready
+      step: crossplane-contrib-function-auto-ready
