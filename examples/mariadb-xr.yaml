@@ -1,19 +1,16 @@
 apiVersion: azure.platform.upbound.io/v1alpha1
-kind: SQLInstance
+kind: XSQLInstance
 metadata:
-  name: configuration-azure-database-db-postgresql
+  name: configuration-azure-database-db-mariadb
   namespace: default
-  annotations:
-    render.crossplane.io/composition-path: apis/postgresql/composition.yaml
-    render.crossplane.io/function-path: examples/function/function.yaml
 spec:
   compositionSelector:
     matchLabels:
-      dbengine: postgres
+      dbengine: mariadb
   parameters:
     region: westus
     storageGB: 5 #Minimum value is 5
-    version: "11"
+    version: "10.3"
     passwordSecretRef:
       namespace: default
       name: psqlsecret
@@ -21,7 +18,8 @@ spec:
     networkRef:
       id: configuration-azure-database #This field must match the XNetwork XR spec.parameters.id
   writeConnectionSecretToRef:
-    name: configuration-azure-database-db-conn-postgresql
+    name: configuration-azure-database-db-conn-mariadb
+    namespace: default
 ---
 apiVersion: v1
 data:
