@@ -37,7 +37,7 @@ _items = [
                         }
                     }
                 }
-                dbforpostgresqlv1beta1.Server{
+                dbforpostgresqlv1beta1.FlexibleServer{
                     metadata = {
                         annotations = {
                             "crossplane.io/composition-resource-name" = "postgresqlserver"
@@ -78,53 +78,24 @@ _items = [
                                     "azure.platform.upbound.io/network-id" = "configuration-azure-database"
                                 }
                             }
-                            skuName = "GP_Gen5_2"
+                            skuName = "Standard_B1ms"
                             sslEnforcementEnabled = False
                             sslMinimalTlsVersionEnforced = "TLSEnforcementDisabled"
                             storageMb = 5120
                             version = "11"
+                            delegatedSubnetIdSelector = {
+                                matchLabels = {
+                                    "azure.platform.upbound.io/network-id" = "configuration-azure-database"
+                                }
+                            }
+                            privateDnsZoneIdSelector = {
+                                matchLabels = {
+                                    "azure.platform.upbound.io/network-id" = "configuration-azure-database"
+                                }
+                            }
                         }
                     }
                 }
-                dbforpostgresqlv1beta1.VirtualNetworkRule{
-                    metadata = {
-                        annotations = {
-                            "crossplane.io/composition-resource-name" = "vnetrule"
-                        }
-                        generateName = "configuration-azure-database-db-postgresql-"
-                        labels = {
-                            "crossplane.io/composite" = "configuration-azure-database-db-postgresql"
-                        }
-                        name = "configuration-azure-database-sn-rule"
-                        ownerReferences = [
-                            {
-                                apiVersion = "azure.platform.upbound.io/v1alpha1"
-                                blockOwnerDeletion = True
-                                controller = True
-                                kind = "XSQLInstance"
-                                name = "configuration-azure-database-db-postgresql"
-                                uid = ""
-                            }
-                        ]
-                    }
-                    spec = {
-                        forProvider = {
-                            resourceGroupNameSelector = {
-                                matchLabels = {
-                                    "azure.platform.upbound.io/network-id" = "configuration-azure-database"
-                                }
-                            }
-                            serverNameSelector = {
-                                matchControllerRef = True
-                            }
-                            subnetIdSelector = {
-                                matchLabels = {
-                                    "azure.platform.upbound.io/network-id" = "configuration-azure-database"
-                                }
-                            }
-                        }
-                    }
-            }
             ]
             compositionPath: "apis/postgresql/composition.yaml"
             xrPath: "examples/postgres-xr.yaml"

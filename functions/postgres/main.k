@@ -24,7 +24,7 @@ _defaultSpec = DefaultSpec {
 }
 
 _items = [
-    dbforpostgresqlv1beta1.Server {
+    dbforpostgresqlv1beta1.FlexibleServer {
         metadata = {
             **_metadata("postgresqlserver")
             name = "{}-postgresql".format(oxr.spec.parameters.networkRef.id)
@@ -37,7 +37,7 @@ _items = [
                     { type = "SystemAssigned" }
                 ]
                 infrastructureEncryptionEnabled = False
-                skuName = "GP_Gen5_2"
+                skuName = "Standard_B1ms"  # Updated SKU for Flexible Server
                 sslEnforcementEnabled = False
                 sslMinimalTlsVersionEnforced = "TLSEnforcementDisabled"
                 location = oxr.spec.parameters.region
@@ -53,6 +53,16 @@ _items = [
                 }
                 storageMb = oxr.spec.parameters.storageGB * 1024
                 version = oxr.spec.parameters.version
+                delegatedSubnetIdSelector = {
+                    matchLabels = {
+                        "azure.platform.upbound.io/network-id" = oxr.spec.parameters.networkRef.id
+                    }
+                }
+                privateDnsZoneIdSelector = {
+                    matchLabels = {
+                        "azure.platform.upbound.io/network-id" = oxr.spec.parameters.networkRef.id
+                    }
+                }
             }
             providerConfigRef = {
                 name = oxr.spec.parameters.providerConfigName
