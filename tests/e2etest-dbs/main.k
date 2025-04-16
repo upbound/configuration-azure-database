@@ -11,12 +11,12 @@ _items = [
             manifests: [
                 platformazurev1alpha1.XSQLInstance{
                     metadata = {
-                        name = "configuration-azure-database-db-mariadb"
+                        name = "configuration-azure-database-db-mysql"
                     }
                     spec = {
                         compositionSelector = {
                             matchLabels = {
-                                dbengine = "mariadb"
+                                dbengine = "mysql"
                             }
                         }
                         parameters = {
@@ -33,7 +33,7 @@ _items = [
                             }
                         }
                         writeConnectionSecretToRef = {
-                            name = "configuration-azure-database-db-conn-mariadb"
+                            name = "configuration-azure-database-db-conn-mysql"
                             namespace = "default"
                         }
                     }
@@ -75,6 +75,18 @@ _items = [
                         parameters = {
                             id = "configuration-azure-database"
                             region = "westus"
+                            addressRange = "10.0.0.0/16"
+                            generalSubnetRange = "10.0.1.0/24"
+                            databaseSubnets = [
+                                {
+                                    addressRange = "10.0.2.0/24"
+                                    serviceType = "postgresql"
+                                }
+                                {
+                                    addressRange = "10.0.3.0/24"
+                                    serviceType = "mysql"
+                                }
+                            ]
                         }
                     }
                 }

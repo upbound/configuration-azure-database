@@ -1,5 +1,5 @@
-import models.io.upbound.azure.dbforpostgresql.v1beta2 as dbforpostgresqlv1beta2
-import models.io.upbound.azure.dbforpostgresql.v1beta1 as dbforpostgresqlv1beta1
+import models.io.upbound.azure.dbformysql.v1beta2 as dbformysqlv1beta2
+import models.io.upbound.azure.dbformysql.v1beta1 as dbformysqlv1beta1
 import models.io.upbound.azure.network.v1beta2 as networkv1beta2
 import models.io.upbound.azure.network.v1beta1 as networkv1beta1
 import models.io.upbound.dev.meta.v1alpha1 as metav1alpha1
@@ -7,18 +7,18 @@ import models.io.upbound.platform.azure.v1alpha1 as platformazurev1alpha1
 
 _items = [
     metav1alpha1.CompositionTest{
-        metadata.name: "pg-flexibleserver"
+        metadata.name: "mysql-flexibleserver"
         spec= {
             assertResources: [
                 platformazurev1alpha1.XSQLInstance{
                     metadata = {
-                        name = "configuration-azure-database-db-postgresql"
+                        name = "configuration-azure-database-db-mysql"
                         namespace = "default"
                     }
                     spec = {
                         compositionSelector = {
                             matchLabels = {
-                                dbengine = "postgres"
+                                dbengine = "mysql"
                             }
                         }
                         parameters = {
@@ -32,10 +32,10 @@ _items = [
                             }
                             region = "westus"
                             storageGB = 5
-                            version = "11"
+                            version = "8.0"
                         }
                         writeConnectionSecretToRef = {
-                            name = "configuration-azure-database-db-conn-postgresql"
+                            name = "configuration-azure-database-db-conn-mysql"
                             namespace = "default"
                         }
                     }
@@ -43,9 +43,9 @@ _items = [
                 networkv1beta2.PrivateDNSZone {
                     metadata = {
                         annotations = {
-                            "crossplane.io/external-name" = "configuration-azure-database.postgres.database.azure.com"
+                            "crossplane.io/external-name" = "configuration-azure-database.mysql.database.azure.com"
                         }
-                        name = "configuration-azure-database-postgresql"
+                        name = "configuration-azure-database-mysql"
                     }
                     spec = {
                         forProvider = {
@@ -62,7 +62,7 @@ _items = [
                         annotations = {
                             "crossplane.io/composition-resource-name" = "privatednszonevnetlink"
                         }
-                        name = "configuration-azure-database-postgresql"
+                        name = "configuration-azure-database-mysql"
                     }
                     spec = {
                         forProvider = {
@@ -84,34 +84,33 @@ _items = [
                         }
                     }
                 }
-                dbforpostgresqlv1beta2.FlexibleServer{
+                dbformysqlv1beta2.FlexibleServer {
                     metadata = {
                         annotations = {
-                            "crossplane.io/composition-resource-name" = "postgresqlserver"
+                            "crossplane.io/composition-resource-name" = "mysqlserver"
                         }
-                        generateName = "configuration-azure-database-db-postgresql-"
+                        generateName = "configuration-azure-database-db-mysql-"
                         labels = {
-                            "crossplane.io/composite" = "configuration-azure-database-db-postgresql"
+                            "crossplane.io/composite" = "configuration-azure-database-db-mysql"
                         }
-                        name = "configuration-azure-database-postgresql"
+                        name = "configuration-azure-database-mysql"
                     }
                     spec = {
                         forProvider = {
-                            administratorLogin = "psqladmin"
+                            administratorLogin = "xp-admin"
+                            skuName = "GP_Standard_D2ds_v4"
+                            location = "westus"
                             administratorPasswordSecretRef = {
                                 key = "password"
                                 name = "psqlsecret"
                                 namespace = "default"
                             }
-                            location = "westus"
+                            backupRetentionDays = 7
                             resourceGroupNameSelector = {
                                 matchLabels = {
                                     "azure.platform.upbound.io/network-id" = "configuration-azure-database"
                                 }
                             }
-                            skuName = "GP_Standard_D4s_v3"
-                            storageMb = 5120
-                            version = "11"
                             delegatedSubnetIdSelector = {
                                 matchLabels = {
                                     "azure.platform.upbound.io/network-id" = "configuration-azure-database"
@@ -125,13 +124,13 @@ _items = [
                         }
                     }
                 }
-                dbforpostgresqlv1beta1.VirtualNetworkRule {
+                dbformysqlv1beta1.VirtualNetworkRule {
                     metadata = {
                         annotations = {
                             "crossplane.io/composition-resource-name" = "vnetrule"
                         }
                         labels = {
-                            "crossplane.io/composite" = "configuration-azure-database-db-postgresql"
+                            "crossplane.io/composite" = "configuration-azure-database-db-mysql"
                         }
                         name = "configuration-azure-database-sn-rule"
                     }
@@ -153,9 +152,34 @@ _items = [
                         }
                     }
                 }
+                dbformysqlv1beta1.Database {
+                    metadata = {
+                        annotations = {
+                            "crossplane.io/composition-resource-name" = "database"
+                        }
+                        labels = {
+                            "crossplane.io/composite" = "configuration-azure-database-db-mysql"
+                        }
+                        name = "upbound"
+                    }
+                    spec = {
+                        forProvider = {
+                            charset = "utf8mb4"
+                            collation = "utf8mb4_unicode_ci"
+                            resourceGroupNameSelector = {
+                                matchLabels = {
+                                    "azure.platform.upbound.io/network-id" = "configuration-azure-database"
+                                }
+                            }
+                            serverNameSelector = {
+                                matchControllerRef = True
+                            }
+                        }
+                    }
+                }
             ]
-            compositionPath: "apis/postgresql/composition.yaml"
-            xrPath: "examples/postgres-xr.yaml"
+            compositionPath: "apis/mysql/composition.yaml"
+            xrPath: "examples/mysql-xr.yaml"
             xrdPath: "apis/definition.yaml"
             timeoutSeconds: 60
             validate: False
