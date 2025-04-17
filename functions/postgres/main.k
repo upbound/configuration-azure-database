@@ -107,9 +107,6 @@ _items = [
                     }
                 }
             }
-            providerConfigRef = {
-                name = oxr.spec.parameters.providerConfigName
-            }
             writeConnectionSecretToRef = {
                 namespace = oxr.spec.writeConnectionSecretToRef.namespace
                 name = "{}-postgresql".format(oxr.metadata.uid)

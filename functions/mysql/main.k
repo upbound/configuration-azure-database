@@ -108,9 +108,6 @@ _items = [
                     }
                 }
             }
-            providerConfigRef = {
-                name = oxr.spec.parameters.providerConfigName
-            }
             writeConnectionSecretToRef = {
                 namespace = oxr.spec.writeConnectionSecretToRef.namespace
                 name = "{}-mysql".format(oxr.metadata.uid)
@@ -159,9 +156,6 @@ _items = [
                         "azure.platform.upbound.io/network-id" = oxr.spec.parameters.networkRef.id
                     }
                 }
-            }
-            providerConfigRef = {
-                name = oxr.spec.parameters.providerConfigName
             }
         }
     }
