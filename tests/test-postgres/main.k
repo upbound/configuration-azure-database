@@ -46,6 +46,9 @@ _items = [
                             "crossplane.io/external-name" = "configuration-azure-database.postgres.database.azure.com"
                         }
                         name = "configuration-azure-database-postgresql"
+                        labels = {
+                            "azure.platform.upbound.io/network-id" = "configuration-azure-database"
+                        }
                     }
                     spec = {
                         forProvider = {

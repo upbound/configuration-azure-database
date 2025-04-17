@@ -34,6 +34,9 @@ _items = [
             annotations = {
                 "crossplane.io/external-name" = "{}.postgres.database.azure.com".format(oxr.spec.parameters.networkRef.id)
             }
+            labels = {
+                "azure.platform.upbound.io/network-id" = oxr.spec.parameters.networkRef.id
+            }
         }
         spec = {
             **_defaultSpec
