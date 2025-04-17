@@ -9,7 +9,7 @@ spec:
   - provider: xpkg.upbound.io/upbound/provider-azure-dbforpostgresql
     version: v1
   - configuration: xpkg.upbound.io/upbound/configuration-azure-network
-    version: v0.16.0
+    version: v0.0.0-1744902076
   - function: xpkg.upbound.io/crossplane-contrib/function-auto-ready
     version: '>=v0.0.0'
   description: This configuration provides a foundation to build and operate Azure databases.
