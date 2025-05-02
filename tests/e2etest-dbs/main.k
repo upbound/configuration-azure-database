@@ -21,7 +21,7 @@ _items = [
                         }
                         parameters = {
                             region = "westus"
-                            storageGB = 5
+                            storageGB = 20
                             version = "10.3"
                             passwordSecretRef = {
                                 namespace = "default"
@@ -29,7 +29,7 @@ _items = [
                                 key = "password"
                             }
                             networkRef = {
-                                id = "configuration-azure-database"
+                                id = "configuration-azure-database-mysql"
                             }
                         }
                         writeConnectionSecretToRef = {
@@ -50,15 +50,15 @@ _items = [
                         }
                         parameters = {
                             region = "westus"
-                            storageGB = 5
-                            version = "11"
+                            storageGB = 32
+                            version = "16"
                             passwordSecretRef = {
                                 namespace = "default"
                                 name = "psqlsecret"
                                 key = "password"
                             }
                             networkRef = {
-                                id = "configuration-azure-database"
+                                id = "configuration-azure-database-postgresql"
                             }
                         }
                         writeConnectionSecretToRef = {
@@ -69,11 +69,11 @@ _items = [
                 }
                 platformazurev1alpha1.XNetwork{
                     metadata = {
-                        name = "ref-azure-network"
+                        name = "ref-azure-network-postgresql"
                     }
                     spec = {
                         parameters = {
-                            id = "configuration-azure-database"
+                            id = "configuration-azure-database-postgresql"
                             region = "westus"
                             addressRange = "10.0.0.0/16"
                             generalSubnetRange = "10.0.1.0/24"
@@ -82,6 +82,21 @@ _items = [
                                     addressRange = "10.0.2.0/24"
                                     serviceType = "postgresql"
                                 }
+                            ]
+                        }
+                    }
+                }
+                platformazurev1alpha1.XNetwork{
+                    metadata = {
+                        name = "ref-azure-network-mysql"
+                    }
+                    spec = {
+                        parameters = {
+                            id = "configuration-azure-database-mysql"
+                            region = "westus"
+                            addressRange = "10.0.0.0/16"
+                            generalSubnetRange = "10.0.1.0/24"
+                            databaseSubnets = [
                                 {
                                     addressRange = "10.0.3.0/24"
                                     serviceType = "mysql"

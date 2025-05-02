@@ -121,35 +121,8 @@ _items = [
                                     "azure.platform.upbound.io/subnet-service-type" = "postgresql"
                                 }
                             }
+                            publicNetworkAccessEnabled = False
                             privateDnsZoneIdSelector = {
-                                matchLabels = {
-                                    "azure.platform.upbound.io/network-id" = "configuration-azure-database"
-                                }
-                            }
-                        }
-                    }
-                }
-                dbforpostgresqlv1beta1.VirtualNetworkRule {
-                    metadata = {
-                        annotations = {
-                            "crossplane.io/composition-resource-name" = "vnetrule"
-                        }
-                        labels = {
-                            "crossplane.io/composite" = "configuration-azure-database-db-postgresql"
-                        }
-                        name = "configuration-azure-database-sn-rule"
-                    }
-                    spec = {
-                        forProvider = {
-                            resourceGroupNameSelector = {
-                                matchLabels = {
-                                    "azure.platform.upbound.io/network-id" = "configuration-azure-database"
-                                }
-                            }
-                            serverNameSelector = {
-                                matchControllerRef = True
-                            }
-                            subnetIdSelector = {
                                 matchLabels = {
                                     "azure.platform.upbound.io/network-id" = "configuration-azure-database"
                                 }

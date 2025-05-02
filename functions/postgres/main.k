@@ -105,6 +105,7 @@ _items = [
                         "azure.platform.upbound.io/subnet-service-type" = "postgresql"
                     }
                 }
+                publicNetworkAccessEnabled = False
                 privateDnsZoneIdSelector = {
                     matchLabels = {
                         "azure.platform.upbound.io/network-id" = oxr.spec.parameters.networkRef.id
@@ -114,30 +115,6 @@ _items = [
             writeConnectionSecretToRef = {
                 namespace = oxr.spec.writeConnectionSecretToRef.namespace
                 name = "{}-postgresql".format(oxr.metadata.uid)
-            }
-        }
-    }
-    dbforpostgresqlv1beta1.VirtualNetworkRule {
-        metadata = {
-            **_metadata("vnetrule")
-            name = "{}-sn-rule".format(oxr.spec.parameters.networkRef.id)
-        }
-        spec = {
-            **_defaultSpec
-            forProvider = {
-                resourceGroupNameSelector = {
-                    matchLabels = {
-                        "azure.platform.upbound.io/network-id" = oxr.spec.parameters.networkRef.id
-                    }
-                }
-                serverNameSelector = {
-                    matchControllerRef = True
-                }
-                subnetIdSelector = {
-                    matchLabels = {
-                        "azure.platform.upbound.io/network-id" = oxr.spec.parameters.networkRef.id
-                    }
-                }
             }
         }
     }

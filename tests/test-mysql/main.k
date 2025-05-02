@@ -100,7 +100,7 @@ _items = [
                     }
                     spec = {
                         forProvider = {
-                            administratorLogin = "xp-admin"
+                            administratorLogin = "mysqladmin"
                             skuName = "GP_Standard_D2ds_v4"
                             location = "westus"
                             administratorPasswordSecretRef = {
@@ -128,35 +128,7 @@ _items = [
                         }
                     }
                 }
-                dbformysqlv1beta1.VirtualNetworkRule {
-                    metadata = {
-                        annotations = {
-                            "crossplane.io/composition-resource-name" = "vnetrule"
-                        }
-                        labels = {
-                            "crossplane.io/composite" = "configuration-azure-database-db-mysql"
-                        }
-                        name = "configuration-azure-database-sn-rule"
-                    }
-                    spec = {
-                        forProvider = {
-                            resourceGroupNameSelector = {
-                                matchLabels = {
-                                    "azure.platform.upbound.io/network-id" = "configuration-azure-database"
-                                }
-                            }
-                            serverNameSelector = {
-                                matchControllerRef = True
-                            }
-                            subnetIdSelector = {
-                                matchLabels = {
-                                    "azure.platform.upbound.io/network-id" = "configuration-azure-database"
-                                }
-                            }
-                        }
-                    }
-                }
-                dbformysqlv1beta1.Database {
+                dbformysqlv1beta1.FlexibleDatabase {
                     metadata = {
                         annotations = {
                             "crossplane.io/composition-resource-name" = "database"

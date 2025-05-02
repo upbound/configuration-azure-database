@@ -86,7 +86,7 @@ _items = [
         spec = {
             **_defaultSpec
             forProvider = {
-                administratorLogin = "xp-admin"
+                administratorLogin = "mysqladmin"
                 skuName = "GP_Standard_D2ds_v4"
                 location = oxr.spec.parameters.region
                 administratorPasswordSecretRef = {
@@ -118,31 +118,8 @@ _items = [
             }
         }
     }
-    dbformysqlv1beta1.VirtualNetworkRule {
-        metadata = {
-            **_metadata("vnetrule")
-            name = "{}-sn-rule".format(oxr.spec.parameters.networkRef.id)
-        }
-        spec = {
-            **_defaultSpec
-            forProvider = {
-                resourceGroupNameSelector = {
-                    matchLabels = {
-                        "azure.platform.upbound.io/network-id" = oxr.spec.parameters.networkRef.id
-                    }
-                }
-                serverNameSelector = {
-                    matchControllerRef = True
-                }
-                subnetIdSelector = {
-                    matchLabels = {
-                        "azure.platform.upbound.io/network-id" = oxr.spec.parameters.networkRef.id
-                    }
-                }
-            }
-        }
-    }
-    dbformysqlv1beta1.Database {
+
+    dbformysqlv1beta1.FlexibleDatabase {
         metadata = {
             **_metadata("database")
             name = "upbound"
