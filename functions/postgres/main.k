@@ -118,6 +118,21 @@ _items = [
             }
         }
     }
+    dbforpostgresqlv1beta1.FlexibleServerDatabase{
+        metadata = {
+            **_metadata("database")
+            name = "upbound"
+        }
+        spec = {
+            forProvider = {
+                charset = "utf8"
+                collation = "en_US.utf8"
+                serverIdSelector = {
+                    matchControllerRef = True
+                }
+            }
+        }
+    }
     {
         apiVersion: "meta.krm.kcl.dev/v1alpha1"
         kind: "CompositeConnectionDetails"

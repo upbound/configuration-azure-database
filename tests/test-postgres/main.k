@@ -130,6 +130,27 @@ _items = [
                         }
                     }
                 }
+                dbforpostgresqlv1beta1.FlexibleServerDatabase{
+                    metadata = {
+                        annotations = {
+                            "crossplane.io/composition-resource-name" = "database"
+                        }
+                        labels = {
+                            "crossplane.io/composite" = "configuration-azure-database-db-postgresql"
+                        }
+                        name = "upbound"
+                    }
+                    spec = {
+                        forProvider = {
+                            charset = "utf8"
+                            collation = "en_US.utf8"
+                            serverIdSelector = {
+                                matchControllerRef = True
+                            }
+                        }
+                    }
+
+                }
             ]
             compositionPath: "apis/postgresql/composition.yaml"
             xrPath: "examples/postgres-xr.yaml"
