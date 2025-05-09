@@ -6,3 +6,10 @@ spec:
   parameters:
     id: configuration-azure-database
     region: westus
+    addressRange: "10.0.0.0/16"
+    generalSubnetRange: "10.0.1.0/24"
+    databaseSubnets:
+      - addressRange: "10.0.2.0/24"
+        serviceType: "postgresql"
+      - addressRange: "10.0.3.0/24"
+        serviceType: "mysql"

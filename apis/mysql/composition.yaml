@@ -1,9 +1,9 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: xmariadbinstances.azure.platform.upbound.io
+  name: xmysqlinstances.azure.platform.upbound.io
   labels:
-    dbengine: mariadb
+    dbengine: mysql
     provider: azure
 spec:
   compositeTypeRef:
@@ -12,8 +12,8 @@ spec:
   mode: Pipeline
   pipeline:
     - functionRef:
-        name: upbound-configuration-azure-databasemariadb
-      step: mariadb
+        name: upbound-configuration-azure-databasemysql
+      step: mysql
     - functionRef:
         name: crossplane-contrib-function-auto-ready
       step: crossplane-contrib-function-auto-ready

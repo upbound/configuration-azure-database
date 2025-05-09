@@ -9,7 +9,7 @@ spec:
       dbengine: postgres
   parameters:
     region: westus
-    storageGB: 5 #Minimum value is 5
+    storageGB: 32 #Minimum value is 32
     version: "11"
     passwordSecretRef:
       namespace: default
@@ -20,12 +20,3 @@ spec:
   writeConnectionSecretToRef:
     name: configuration-azure-database-db-conn-postgresql
     namespace: default
----
-apiVersion: v1
-data:
-  password: dXBiMHVuZHIwY2s1ITMxMzM3
-kind: Secret
-metadata:
-  name: psqlsecret
-  namespace: default
-type: Opaque

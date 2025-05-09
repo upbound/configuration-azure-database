@@ -1,16 +1,16 @@
 apiVersion: azure.platform.upbound.io/v1alpha1
 kind: XSQLInstance
 metadata:
-  name: configuration-azure-database-db-mariadb
+  name: configuration-azure-database-db-mysql
   namespace: default
 spec:
   compositionSelector:
     matchLabels:
-      dbengine: mariadb
+      dbengine: mysql
   parameters:
     region: westus
-    storageGB: 5 #Minimum value is 5
-    version: "10.3"
+    storageGB: 20 #Minimum value is 20
+    version: "8.0"
     passwordSecretRef:
       namespace: default
       name: psqlsecret
@@ -18,14 +18,5 @@ spec:
     networkRef:
       id: configuration-azure-database #This field must match the XNetwork XR spec.parameters.id
   writeConnectionSecretToRef:
-    name: configuration-azure-database-db-conn-mariadb
+    name: configuration-azure-database-db-conn-mysql
     namespace: default
----
-apiVersion: v1
-data:
-  password: dXBiMHVuZHIwY2s1ITMxMzM3
-kind: Secret
-metadata:
-  name: psqlsecret
-  namespace: default
-type: Opaque
