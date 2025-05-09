@@ -31,7 +31,7 @@ _items = [
                                 namespace = "default"
                             }
                             region = "westus"
-                            storageGB = 5
+                            storageGB = 32
                             version = "11"
                         }
                         writeConnectionSecretToRef = {
@@ -113,7 +113,7 @@ _items = [
                                 }
                             }
                             skuName = "GP_Standard_D4s_v3"
-                            storageMb = 5120
+                            storageMb = 32768
                             version = "11"
                             delegatedSubnetIdSelector = {
                                 matchLabels = {

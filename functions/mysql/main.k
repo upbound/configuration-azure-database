@@ -29,6 +29,8 @@ _defaultSpec = DefaultSpec {
     forProvider = {}
 }
 
+assert 20 <= oxr.spec.parameters.storageGB <= 16384, "storageGB supported values for MySQL FlexibleServer are between 20 and 16384"
+
 _items = [
     networkv1beta2.PrivateDNSZone {
         metadata = {
@@ -95,6 +97,7 @@ _items = [
                     namespace = oxr.spec.parameters.passwordSecretRef.namespace
                 }
                 backupRetentionDays = 7
+                storage.sizeGb = oxr.spec.parameters.storageGB
                 resourceGroupNameSelector = {
                     matchLabels = {
                         "azure.platform.upbound.io/network-id" = oxr.spec.parameters.networkRef.id

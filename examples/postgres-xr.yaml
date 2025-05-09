@@ -9,7 +9,7 @@ spec:
       dbengine: postgres
   parameters:
     region: westus
-    storageGB: 5 #Minimum value is 5
+    storageGB: 32 #Minimum value is 32
     version: "11"
     passwordSecretRef:
       namespace: default

@@ -9,7 +9,7 @@ spec:
       dbengine: mysql
   parameters:
     region: westus
-    storageGB: 5 #Minimum value is 5
+    storageGB: 20 #Minimum value is 20
     version: "8.0"
     passwordSecretRef:
       namespace: default

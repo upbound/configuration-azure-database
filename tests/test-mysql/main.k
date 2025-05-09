@@ -31,7 +31,7 @@ _items = [
                                 namespace = "default"
                             }
                             region = "westus"
-                            storageGB = 5
+                            storageGB = 20
                             version = "8.0"
                         }
                         writeConnectionSecretToRef = {
@@ -109,6 +109,7 @@ _items = [
                                 namespace = "default"
                             }
                             backupRetentionDays = 7
+                            storage.sizeGb = 20
                             resourceGroupNameSelector = {
                                 matchLabels = {
                                     "azure.platform.upbound.io/network-id" = "configuration-azure-database"

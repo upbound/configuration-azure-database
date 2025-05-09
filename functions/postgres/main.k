@@ -26,6 +26,8 @@ _defaultSpec = DefaultSpec {
     forProvider = {}
 }
 
+assert oxr.spec.parameters.storageGB in [32,64,128,256,512,1024,2048], "storageGB supported values are 32,64,128,256,512,1024,2048"
+
 _items = [
     networkv1beta2.PrivateDNSZone {
         metadata = {
