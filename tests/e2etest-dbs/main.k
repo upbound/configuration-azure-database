@@ -20,7 +20,7 @@ _items = [
                             }
                         }
                         parameters = {
-                            region = "westus"
+                            region = "westus2"
                             storageGB = 20
                             version = "10.3"
                             passwordSecretRef = {
@@ -49,7 +49,7 @@ _items = [
                             }
                         }
                         parameters = {
-                            region = "westus"
+                            region = "westus2"
                             storageGB = 32
                             version = "16"
                             passwordSecretRef = {
