@@ -118,7 +118,6 @@ _items = [
                             delegatedSubnetIdSelector = {
                                 matchLabels = {
                                     "azure.platform.upbound.io/network-id" = "configuration-azure-database"
-                                    "azure.platform.upbound.io/subnet-service-type" = "mysql"
                                 }
                             }
                             privateDnsZoneIdSelector = {
