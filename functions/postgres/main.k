@@ -140,8 +140,8 @@ _items = [
         kind: "CompositeConnectionDetails"
         if "postgresqlserver" in ocds:
             data: {
-                username = ocds["postgresqlserver"].ConnectionDetails.username
-                password = ocds["postgresqlserver"].ConnectionDetails.password
+                username = base64.encode(ocds["postgresqlserver"].Resource?.spec?.forProvider?.administratorLogin)
+                password = ocds["postgresqlserver"].ConnectionDetails["attribute.administrator_password"]
                 host = base64.encode(ocds["postgresqlserver"].Resource?.status?.atProvider?.fqdn)
             }
         else:
