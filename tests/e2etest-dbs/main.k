@@ -80,7 +80,7 @@ _items = [
                             databaseSubnets = [
                                 {
                                     addressRange = "10.0.2.0/24"
-                                    serviceType = "postgresql"
+                                    serviceType = "postgres"
                                 }
                             ]
                         }
