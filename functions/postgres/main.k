@@ -104,7 +104,7 @@ _items = [
                 delegatedSubnetIdSelector = {
                     matchLabels = {
                         "azure.platform.upbound.io/network-id" = oxr.spec.parameters.networkRef.id
-                        "azure.platform.upbound.io/subnet-service-type" = "postgresql"
+                        "azure.platform.upbound.io/subnet-service-type" = "postgres"
                     }
                 }
                 publicNetworkAccessEnabled = False
