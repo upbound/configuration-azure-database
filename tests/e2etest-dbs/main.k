@@ -20,7 +20,7 @@ _items = [
                             }
                         }
                         parameters = {
-                            region = "westus"
+                            region = "westeurope"
                             storageGB = 20
                             version = "10.3"
                             passwordSecretRef = {
@@ -49,7 +49,7 @@ _items = [
                             }
                         }
                         parameters = {
-                            region = "westus"
+                            region = "westeurope"
                             storageGB = 32
                             version = "16"
                             passwordSecretRef = {
@@ -74,7 +74,7 @@ _items = [
                     spec = {
                         parameters = {
                             id = "configuration-azure-database-postgresql"
-                            region = "westus"
+                            region = "westeurope"
                             addressRange = "10.0.0.0/16"
                             generalSubnetRange = "10.0.1.0/24"
                             databaseSubnets = [
@@ -93,7 +93,7 @@ _items = [
                     spec = {
                         parameters = {
                             id = "configuration-azure-database-mysql"
-                            region = "westus"
+                            region = "westeurope"
                             addressRange = "10.0.0.0/16"
                             generalSubnetRange = "10.0.1.0/24"
                             databaseSubnets = [

@@ -148,8 +148,8 @@ _items = [
         kind: "CompositeConnectionDetails"
         if "mysqlserver" in ocds:
             data: {
-                username = ocds["mysqlserver"].ConnectionDetails.username
-                password = ocds["mysqlserver"].ConnectionDetails.password
+                username = base64.encode(ocds["mysqlserver"].Resource?.spec?.forProvider?.administratorLogin)
+                password = ocds["mysqlserver"].ConnectionDetails["attribute.administrator_password"]
                 host = base64.encode(ocds["mysqlserver"].Resource?.status?.atProvider?.fqdn)
             }
         else:
