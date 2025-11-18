@@ -1,7 +1,5 @@
-import models.io.upbound.azure.dbformysql.v1beta2 as dbformysqlv1beta2
-import models.io.upbound.azure.dbformysql.v1beta1 as dbformysqlv1beta1
-import models.io.upbound.azure.network.v1beta2 as networkv1beta2
-import models.io.upbound.azure.network.v1beta1 as networkv1beta1
+import models.io.upbound.azurem.dbformysql.v1beta1 as dbformysqlv1beta1
+import models.io.upbound.azurem.network.v1beta1 as networkv1beta1
 import models.io.upbound.dev.meta.v1alpha1 as metav1alpha1
 import models.io.upbound.platform.azure.v1alpha1 as platformazurev1alpha1
 
@@ -10,13 +8,13 @@ _items = [
         metadata.name: "mysql-flexibleserver"
         spec= {
             assertResources: [
-                platformazurev1alpha1.XSQLInstance{
+                platformazurev1alpha1.SQLInstance{
                     metadata = {
                         name = "configuration-azure-database-db-mysql"
                         namespace = "default"
                     }
                     spec = {
-                        compositionSelector = {
+                        crossplane.compositionSelector = {
                             matchLabels = {
                                 dbengine = "mysql"
                             }
@@ -28,7 +26,6 @@ _items = [
                             passwordSecretRef = {
                                 key = "password"
                                 name = "psqlsecret"
-                                namespace = "default"
                             }
                             region = "westus"
                             storageGB = 20
@@ -36,11 +33,10 @@ _items = [
                         }
                         writeConnectionSecretToRef = {
                             name = "configuration-azure-database-db-conn-mysql"
-                            namespace = "default"
                         }
                     }
                 }
-                networkv1beta2.PrivateDNSZone {
+                networkv1beta1.PrivateDNSZone {
                     metadata = {
                         annotations = {
                             "crossplane.io/external-name" = "configuration-azure-database.mysql.database.azure.com"
@@ -87,12 +83,11 @@ _items = [
                         }
                     }
                 }
-                dbformysqlv1beta2.FlexibleServer {
+                dbformysqlv1beta1.FlexibleServer {
                     metadata = {
                         annotations = {
                             "crossplane.io/composition-resource-name" = "mysqlserver"
                         }
-                        generateName = "configuration-azure-database-db-mysql-"
                         labels = {
                             "crossplane.io/composite" = "configuration-azure-database-db-mysql"
                         }
@@ -106,7 +101,6 @@ _items = [
                             administratorPasswordSecretRef = {
                                 key = "password"
                                 name = "psqlsecret"
-                                namespace = "default"
                             }
                             backupRetentionDays = 7
                             storage.sizeGb = 20

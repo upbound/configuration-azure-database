@@ -1,22 +1,22 @@
 apiVersion: azure.platform.upbound.io/v1alpha1
-kind: XSQLInstance
+kind: SQLInstance
 metadata:
   name: configuration-azure-database-db-postgresql
   namespace: default
 spec:
-  compositionSelector:
-    matchLabels:
-      dbengine: postgres
+  crossplane:
+    compositionSelector:
+      matchLabels:
+        dbengine: postgres
   parameters:
     region: westus
     storageGB: 32 #Minimum value is 32
     version: "11"
+    managementPolicies: ["*"]
     passwordSecretRef:
-      namespace: default
       name: psqlsecret
       key: password
     networkRef:
-      id: configuration-azure-database #This field must match the XNetwork XR spec.parameters.id
+      id: configuration-azure-database #This field must match the Network XR spec.parameters.id
   writeConnectionSecretToRef:
     name: configuration-azure-database-db-conn-postgresql
-    namespace: default

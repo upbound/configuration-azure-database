@@ -1,7 +1,6 @@
-import models.io.upbound.azure.dbforpostgresql.v1beta2 as dbforpostgresqlv1beta2
-import models.io.upbound.azure.dbforpostgresql.v1beta1 as dbforpostgresqlv1beta1
-import models.io.upbound.azure.network.v1beta2 as networkv1beta2
-import models.io.upbound.azure.network.v1beta1 as networkv1beta1
+import models.io.upbound.azurem.dbforpostgresql.v1beta1 as dbforpostgresqlv1beta1
+import models.io.upbound.azurem.network.v1beta1 as networkv1beta1
+import models.io.k8s.api.core.v1 as corev1
 
 import base64
 
@@ -9,7 +8,7 @@ oxr = option("params").oxr # observed composite resource
 ocds = option("params").ocds # observed composed resources
 
 schema DefaultSpec:
-    deletionPolicy: str
+    managementPolicies: [str]
     providerConfigRef: {str:str}
     forProvider: {str:str}
 
@@ -19,8 +18,9 @@ _metadata = lambda name: str -> any {
 
 # spec defaults
 _defaultSpec = DefaultSpec {
-    deletionPolicy = oxr.spec.parameters.deletionPolicy or "Delete"
+    managementPolicies = oxr.spec.parameters.managementPolicies or ["*"]
     providerConfigRef = {
+        kind = "ProviderConfig"
         name = oxr.spec.parameters.providerConfigName or "default"
     }
     forProvider = {}
@@ -29,7 +29,7 @@ _defaultSpec = DefaultSpec {
 assert oxr.spec.parameters.storageGB in [32,64,128,256,512,1024,2048], "storageGB supported values are 32,64,128,256,512,1024,2048"
 
 _items = [
-    networkv1beta2.PrivateDNSZone {
+    networkv1beta1.PrivateDNSZone {
         metadata = {
             **_metadata("privatednszone")
             name = "{}-postgresql".format(oxr.spec.parameters.networkRef.id)
@@ -77,7 +77,7 @@ _items = [
             }
         }
     }
-    dbforpostgresqlv1beta2.FlexibleServer {
+    dbforpostgresqlv1beta1.FlexibleServer {
         metadata = {
             **_metadata("postgresqlserver")
             name = "{}-postgresql".format(oxr.spec.parameters.networkRef.id)
@@ -92,7 +92,6 @@ _items = [
                 administratorPasswordSecretRef= {
                     key = oxr.spec.parameters.passwordSecretRef.key
                     name = oxr.spec.parameters.passwordSecretRef.name
-                    namespace = oxr.spec.parameters.passwordSecretRef.namespace
                 }
                 resourceGroupNameSelector = {
                     matchLabels = {
@@ -115,7 +114,6 @@ _items = [
                 }
             }
             writeConnectionSecretToRef = {
-                namespace = oxr.spec.writeConnectionSecretToRef.namespace
                 name = "{}-postgresql".format(oxr.metadata.uid)
             }
         }
@@ -126,6 +124,7 @@ _items = [
             name = "upbound"
         }
         spec = {
+            **_defaultSpec
             forProvider = {
                 charset = "utf8"
                 collation = "en_US.utf8"
@@ -135,17 +134,23 @@ _items = [
             }
         }
     }
-    {
-        apiVersion: "meta.krm.kcl.dev/v1alpha1"
-        kind: "CompositeConnectionDetails"
+    corev1.Secret {
+        metadata = {
+            name = oxr.spec?.writeConnectionSecretToRef?.name
+            namespace = oxr.metadata.namespace
+            annotations = {
+                "krm.kcl.dev/composition-resource-name" = "connection-secret"
+                if "postgresqlserver" in ocds:
+                    "krm.kcl.dev/ready" = "True"
+            }
+        }
         if "postgresqlserver" in ocds:
-            data: {
+            data = {
                 username = base64.encode(ocds["postgresqlserver"].Resource?.spec?.forProvider?.administratorLogin)
                 password = ocds["postgresqlserver"].ConnectionDetails["attribute.administrator_password"]
                 host = base64.encode(ocds["postgresqlserver"].Resource?.status?.atProvider?.fqdn)
+                port = base64.encode("5432")
             }
-        else:
-            data: {}
     }
 ]
 

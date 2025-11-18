@@ -1,7 +1,5 @@
-import models.io.upbound.azure.dbforpostgresql.v1beta2 as dbforpostgresqlv1beta2
-import models.io.upbound.azure.dbforpostgresql.v1beta1 as dbforpostgresqlv1beta1
-import models.io.upbound.azure.network.v1beta2 as networkv1beta2
-import models.io.upbound.azure.network.v1beta1 as networkv1beta1
+import models.io.upbound.azurem.dbforpostgresql.v1beta1 as dbforpostgresqlv1beta1
+import models.io.upbound.azurem.network.v1beta1 as networkv1beta1
 import models.io.upbound.dev.meta.v1alpha1 as metav1alpha1
 import models.io.upbound.platform.azure.v1alpha1 as platformazurev1alpha1
 
@@ -10,13 +8,13 @@ _items = [
         metadata.name: "pg-flexibleserver"
         spec= {
             assertResources: [
-                platformazurev1alpha1.XSQLInstance{
+                platformazurev1alpha1.SQLInstance{
                     metadata = {
                         name = "configuration-azure-database-db-postgresql"
                         namespace = "default"
                     }
                     spec = {
-                        compositionSelector = {
+                        crossplane.compositionSelector = {
                             matchLabels = {
                                 dbengine = "postgres"
                             }
@@ -28,7 +26,6 @@ _items = [
                             passwordSecretRef = {
                                 key = "password"
                                 name = "psqlsecret"
-                                namespace = "default"
                             }
                             region = "westus"
                             storageGB = 32
@@ -36,11 +33,10 @@ _items = [
                         }
                         writeConnectionSecretToRef = {
                             name = "configuration-azure-database-db-conn-postgresql"
-                            namespace = "default"
                         }
                     }
                 }
-                networkv1beta2.PrivateDNSZone {
+                networkv1beta1.PrivateDNSZone {
                     metadata = {
                         annotations = {
                             "crossplane.io/external-name" = "configuration-azure-database.postgres.database.azure.com"
@@ -87,12 +83,11 @@ _items = [
                         }
                     }
                 }
-                dbforpostgresqlv1beta2.FlexibleServer{
+                dbforpostgresqlv1beta1.FlexibleServer{
                     metadata = {
                         annotations = {
                             "crossplane.io/composition-resource-name" = "postgresqlserver"
                         }
-                        generateName = "configuration-azure-database-db-postgresql-"
                         labels = {
                             "crossplane.io/composite" = "configuration-azure-database-db-postgresql"
                         }
@@ -104,7 +99,6 @@ _items = [
                             administratorPasswordSecretRef = {
                                 key = "password"
                                 name = "psqlsecret"
-                                namespace = "default"
                             }
                             location = "westus"
                             resourceGroupNameSelector = {
