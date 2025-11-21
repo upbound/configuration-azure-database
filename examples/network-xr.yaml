@@ -1,13 +1,16 @@
 apiVersion: azure.platform.upbound.io/v1alpha1
-kind: XNetwork
+kind: Network
 metadata:
   name: ref-azure-network
+  namespace: default
 spec:
   parameters:
     id: configuration-azure-database
     region: westus
     addressRange: "10.0.0.0/16"
     generalSubnetRange: "10.0.1.0/24"
+    managementPolicies: ["*"]
+    providerConfigName: default
     databaseSubnets:
       - addressRange: "10.0.2.0/24"
         serviceType: "postgres"

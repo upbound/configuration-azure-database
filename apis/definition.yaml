@@ -1,20 +1,13 @@
-apiVersion: apiextensions.crossplane.io/v1
+apiVersion: apiextensions.crossplane.io/v2
 kind: CompositeResourceDefinition
 metadata:
-  name: xsqlinstances.azure.platform.upbound.io
+  name: sqlinstances.azure.platform.upbound.io
 spec:
+  scope: Namespaced
   group: azure.platform.upbound.io
   names:
-    kind: XSQLInstance
-    plural: xsqlinstances
-  claimNames:
     kind: SQLInstance
     plural: sqlinstances
-  connectionSecretKeys:
-    - username
-    - password
-    - port
-    - host
   versions:
     - name: v1alpha1
       served: true
@@ -26,19 +19,34 @@ spec:
             spec:
               type: object
               properties:
+                writeConnectionSecretToRef:
+                  type: object
+                  description: Connection secret reference for database credentials
+                  properties:
+                    name:
+                      type: string
+                      description: Name of the connection secret
+                  required:
+                    - name
                 parameters:
                   type: object
                   properties:
                     region:
                       type: string
                       description: Region is the region you'd like your resource to be created in.
-                    deletionPolicy:
-                      description: Delete the external resources when the Claim/XR is deleted. Defaults to Delete
-                      enum:
-                        - Delete
-                        - Orphan
-                      type: string
-                      default: Delete
+                    managementPolicies:
+                      description: ManagementPolicies for Azure Database resources. Defaults to ["*"] which includes all operations (Create, Observe, Update, Delete, LateInitialize). To orphan resources on deletion, use ["Create", "Observe", "Update", "LateInitialize"].
+                      type: array
+                      items:
+                        type: string
+                        enum:
+                          - "*"
+                          - Create
+                          - Observe
+                          - Update
+                          - Delete
+                          - LateInitialize
+                      default: ["*"]
                     providerConfigName:
                       description: Crossplane ProviderConfig to use for provisioning this resources
                       type: string
@@ -53,14 +61,11 @@ spec:
                       type: object
                       description: "A reference to the Secret object containing database password"
                       properties:
-                        namespace:
-                          type: string
                         name:
                           type: string
                         key:
                           type: string
                       required:
-                        - namespace
                         - name
                         - key
                     networkRef:
