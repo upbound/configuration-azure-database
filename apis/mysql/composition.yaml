@@ -1,14 +1,14 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: xmysqlinstances.azure.platform.upbound.io
+  name: mysqlinstances.azure.platform.upbound.io
   labels:
     dbengine: mysql
     provider: azure
 spec:
   compositeTypeRef:
     apiVersion: azure.platform.upbound.io/v1alpha1
-    kind: XSQLInstance
+    kind: SQLInstance
   mode: Pipeline
   pipeline:
     - functionRef:

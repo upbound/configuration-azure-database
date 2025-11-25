@@ -1,22 +1,22 @@
 apiVersion: azure.platform.upbound.io/v1alpha1
-kind: XSQLInstance
+kind: SQLInstance
 metadata:
   name: configuration-azure-database-db-mysql
   namespace: default
 spec:
-  compositionSelector:
-    matchLabels:
-      dbengine: mysql
+  crossplane:
+    compositionSelector:
+      matchLabels:
+        dbengine: mysql
   parameters:
     region: westus
     storageGB: 20 #Minimum value is 20
     version: "8.0"
+    managementPolicies: ["*"]
     passwordSecretRef:
-      namespace: default
       name: psqlsecret
       key: password
     networkRef:
-      id: configuration-azure-database #This field must match the XNetwork XR spec.parameters.id
+      id: configuration-azure-database #This field must match the Network XR spec.parameters.id
   writeConnectionSecretToRef:
     name: configuration-azure-database-db-conn-mysql
-    namespace: default
