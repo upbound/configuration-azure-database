@@ -1,17 +1,16 @@
-import models.io.upbound.azure.dbformysql.v1beta2 as dbformysqlv1beta2
-import models.io.upbound.azure.dbformysql.v1beta1 as dbformysqlv1beta1
-import models.io.upbound.azure.network.v1beta2 as networkv1beta2
-import models.io.upbound.azure.network.v1beta1 as networkv1beta1
+import models.io.upbound.azurem.dbformysql.v1beta1 as dbformysqlv1beta1
+import models.io.upbound.azurem.network.v1beta1 as networkv1beta1
 import models.io.upbound.platform.azure.v1alpha1 as platformazurev1alpha1
+import models.io.k8s.api.core.v1 as corev1
 
 import base64
 
 schema DefaultSpec:
-    deletionPolicy: str
+    managementPolicies: [str]
     providerConfigRef: {str:str}
     forProvider: {str:str}
 
-oxr = platformazurev1alpha1.XSQLInstance {**option("params").oxr}
+oxr = platformazurev1alpha1.SQLInstance {**option("params").oxr}
 ocds = option("params").ocds # observed composed resources
 
 _metadata = lambda name: str -> any {
@@ -22,8 +21,9 @@ _metadata = lambda name: str -> any {
 
 # spec defaults
 _defaultSpec = DefaultSpec {
-    deletionPolicy = oxr.spec.parameters.deletionPolicy or "Delete"
+    managementPolicies = oxr.spec.parameters.managementPolicies or ["*"]
     providerConfigRef = {
+        kind = "ProviderConfig"
         name = oxr.spec.parameters.providerConfigName or "default"
     }
     forProvider = {}
@@ -32,7 +32,7 @@ _defaultSpec = DefaultSpec {
 assert 20 <= oxr.spec.parameters.storageGB <= 16384, "storageGB supported values for MySQL FlexibleServer are between 20 and 16384"
 
 _items = [
-    networkv1beta2.PrivateDNSZone {
+    networkv1beta1.PrivateDNSZone {
         metadata = {
             **_metadata("privatednszone")
             name = "{}-mysql".format(oxr.spec.parameters.networkRef.id)
@@ -80,7 +80,7 @@ _items = [
             }
         }
     }
-    dbformysqlv1beta2.FlexibleServer {
+    dbformysqlv1beta1.FlexibleServer {
         metadata = {
             **_metadata("mysqlserver")
             name = "{}-mysql".format(oxr.spec.parameters.networkRef.id)
@@ -94,7 +94,6 @@ _items = [
                 administratorPasswordSecretRef = {
                     key = oxr.spec.parameters.passwordSecretRef.key
                     name = oxr.spec.parameters.passwordSecretRef.name
-                    namespace = oxr.spec.parameters.passwordSecretRef.namespace
                 }
                 backupRetentionDays = 7
                 storage.sizeGb = oxr.spec.parameters.storageGB
@@ -116,7 +115,6 @@ _items = [
                 }
             }
             writeConnectionSecretToRef = {
-                namespace = oxr.spec.writeConnectionSecretToRef.namespace
                 name = "{}-mysql".format(oxr.metadata.uid)
             }
         }
@@ -143,17 +141,23 @@ _items = [
             }
         }
     }
-    {
-        apiVersion: "meta.krm.kcl.dev/v1alpha1"
-        kind: "CompositeConnectionDetails"
+    corev1.Secret {
+        metadata = {
+            name = oxr.spec?.writeConnectionSecretToRef?.name
+            namespace = oxr.metadata.namespace
+            annotations = {
+                "krm.kcl.dev/composition-resource-name" = "connection-secret"
+                if "mysqlserver" in ocds:
+                    "krm.kcl.dev/ready" = "True"
+            }
+        }
         if "mysqlserver" in ocds:
-            data: {
+            data = {
                 username = base64.encode(ocds["mysqlserver"].Resource?.spec?.forProvider?.administratorLogin)
                 password = ocds["mysqlserver"].ConnectionDetails["attribute.administrator_password"]
                 host = base64.encode(ocds["mysqlserver"].Resource?.status?.atProvider?.fqdn)
+                port = base64.encode("3306")
             }
-        else:
-            data: {}
     }
 ]
 

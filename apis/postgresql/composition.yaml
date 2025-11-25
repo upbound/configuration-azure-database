@@ -1,14 +1,14 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: xpostgresqlinstances.azure.platform.upbound.io
+  name: postgresqlinstances.azure.platform.upbound.io
   labels:
     dbengine: postgres
     provider: azure
 spec:
   compositeTypeRef:
     apiVersion: azure.platform.upbound.io/v1alpha1
-    kind: XSQLInstance
+    kind: SQLInstance
   mode: Pipeline
   pipeline:
     - functionRef:

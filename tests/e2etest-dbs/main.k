@@ -1,4 +1,4 @@
-import models.io.upbound.azure.v1beta1 as azurev1beta1
+import models.io.upbound.azurem.v1beta1 as azurev1beta1
 import models.io.upbound.dev.meta.v1alpha1 as metav1alpha1
 import models.io.upbound.platform.azure.v1alpha1 as platformazurev1alpha1
 
@@ -6,15 +6,19 @@ _items = [
     metav1alpha1.E2ETest{
         metadata.name: "dbs"
         spec= {
-            crossplane.autoUpgrade.channel: "Rapid"
+            crossplane = {
+                version = "2.0.2-up.5"
+                autoUpgrade.channel = "Rapid"
+            }
             defaultConditions: ["Ready"]
             manifests: [
-                platformazurev1alpha1.XSQLInstance{
+                platformazurev1alpha1.SQLInstance{
                     metadata = {
+                        namespace = "default"
                         name = "configuration-azure-database-db-mysql"
                     }
                     spec = {
-                        compositionSelector = {
+                        crossplane.compositionSelector = {
                             matchLabels = {
                                 dbengine = "mysql"
                             }
@@ -24,7 +28,6 @@ _items = [
                             storageGB = 20
                             version = "10.3"
                             passwordSecretRef = {
-                                namespace = "default"
                                 name = "psqlsecret"
                                 key = "password"
                             }
@@ -34,16 +37,16 @@ _items = [
                         }
                         writeConnectionSecretToRef = {
                             name = "configuration-azure-database-db-conn-mysql"
-                            namespace = "default"
                         }
                     }
                 }
-                platformazurev1alpha1.XSQLInstance{
+                platformazurev1alpha1.SQLInstance{
                     metadata = {
+                        namespace = "default"
                         name = "configuration-azure-database-db-postgresql"
                     }
                     spec = {
-                        compositionSelector = {
+                        crossplane.compositionSelector = {
                             matchLabels = {
                                 dbengine = "postgres"
                             }
@@ -53,7 +56,6 @@ _items = [
                             storageGB = 32
                             version = "16"
                             passwordSecretRef = {
-                                namespace = "default"
                                 name = "psqlsecret"
                                 key = "password"
                             }
@@ -63,12 +65,12 @@ _items = [
                         }
                         writeConnectionSecretToRef = {
                             name = "configuration-azure-database-db-conn-postgresql"
-                            namespace = "default"
                         }
                     }
                 }
-                platformazurev1alpha1.XNetwork{
+                platformazurev1alpha1.Network{
                     metadata = {
+                        namespace = "default"
                         name = "ref-azure-network-postgresql"
                     }
                     spec = {
@@ -86,8 +88,9 @@ _items = [
                         }
                     }
                 }
-                platformazurev1alpha1.XNetwork{
+                platformazurev1alpha1.Network{
                     metadata = {
+                        namespace = "default"
                         name = "ref-azure-network-mysql"
                     }
                     spec = {
@@ -114,13 +117,17 @@ _items = [
                     }
                     kind = "Secret"
                     metadata = {
+                        namespace = "default"
                         name = "psqlsecret"
                         namespace = "default"
                     }
                 }
                 # Define the provider configuration
                 azurev1beta1.ProviderConfig{
-                    metadata.name = "default"
+                    metadata = {
+                        name = "default"
+                        namespace = "default"
+                    }
                     spec = {
                         credentials = {
                             source = "Upbound"
