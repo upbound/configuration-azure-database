@@ -4,15 +4,24 @@ metadata:
   name: configuration-azure-database
 spec:
   dependsOn:
-  - provider: xpkg.upbound.io/upbound/provider-azure-dbformysql
+  - apiVersion: pkg.crossplane.io/v1
+    kind: Provider
+    package: xpkg.upbound.io/upbound/provider-azure-dbformysql
     version: v1
-  - provider: xpkg.upbound.io/upbound/provider-azure-dbforpostgresql
+  - apiVersion: pkg.crossplane.io/v1
+    kind: Provider
+    package: xpkg.upbound.io/upbound/provider-azure-dbforpostgresql
     version: v1
-  - configuration: xpkg.upbound.io/upbound/configuration-azure-network
-    version: v0.18.0
-  - function: xpkg.upbound.io/crossplane-contrib/function-auto-ready
+  - apiVersion: pkg.crossplane.io/v1
+    kind: Configuration
+    package: xpkg.upbound.io/upbound/configuration-azure-network
+    version: v1.0.0
+  - apiVersion: pkg.crossplane.io/v1
+    kind: Function
+    package: xpkg.upbound.io/crossplane-contrib/function-auto-ready
     version: '>=v0.0.0'
-  description: This configuration provides a foundation to build and operate Azure databases.
+  description: This configuration provides a foundation to build and operate Azure
+    databases.
   license: Apache-2.0
   maintainer: Upbound <support@upbound.io>
   readme: |

@@ -92,7 +92,6 @@ _items = [
                         annotations = {
                             "crossplane.io/composition-resource-name" = "mysqlserver"
                         }
-                        generateName = "configuration-azure-database-db-mysql-"
                         labels = {
                             "crossplane.io/composite" = "configuration-azure-database-db-mysql"
                         }
