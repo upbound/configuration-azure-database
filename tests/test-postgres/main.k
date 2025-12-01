@@ -92,7 +92,6 @@ _items = [
                         annotations = {
                             "crossplane.io/composition-resource-name" = "postgresqlserver"
                         }
-                        generateName = "configuration-azure-database-db-postgresql-"
                         labels = {
                             "crossplane.io/composite" = "configuration-azure-database-db-postgresql"
                         }
