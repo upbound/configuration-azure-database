@@ -10,8 +10,13 @@ schema DefaultSpec:
     providerConfigRef: {str:str}
     forProvider: {str:str}
 
-oxr = platformazurev1alpha1.SQLInstance {**option("params").oxr}
+# Note: avoid casting the full OXR (e.g. SQLInstance{**oxr}) because the
+# auto-generated model types status.conditions as a typed list which is
+# incompatible with the generic list Crossplane passes at runtime.
+# Instead, keep the raw OXR and cast only the sub-fields we need.
+oxr = option("params").oxr
 ocds = option("params").ocds # observed composed resources
+_params = platformazurev1alpha1.SQLInstance.spec.parameters{**oxr.spec.parameters}
 
 _metadata = lambda name: str -> any {
     {
@@ -21,26 +26,26 @@ _metadata = lambda name: str -> any {
 
 # spec defaults
 _defaultSpec = DefaultSpec {
-    managementPolicies = oxr.spec.parameters.managementPolicies or ["*"]
+    managementPolicies = _params.managementPolicies or ["*"]
     providerConfigRef = {
         kind = "ProviderConfig"
-        name = oxr.spec.parameters.providerConfigName or "default"
+        name = _params.providerConfigName or "default"
     }
     forProvider = {}
 }
 
-assert 20 <= oxr.spec.parameters.storageGB <= 16384, "storageGB supported values for MySQL FlexibleServer are between 20 and 16384"
+assert 20 <= _params.storageGB <= 16384, "storageGB supported values for MySQL FlexibleServer are between 20 and 16384"
 
 _items = [
     networkv1beta1.PrivateDNSZone {
         metadata = {
             **_metadata("privatednszone")
-            name = "{}-mysql".format(oxr.spec.parameters.networkRef.id)
+            name = "{}-mysql".format(_params.networkRef.id)
             annotations = {
-                "crossplane.io/external-name" = "{}.mysql.database.azure.com".format(oxr.spec.parameters.networkRef.id)
+                "crossplane.io/external-name" = "{}.mysql.database.azure.com".format(_params.networkRef.id)
             }
             labels = {
-                "azure.platform.upbound.io/network-id" = oxr.spec.parameters.networkRef.id
+                "azure.platform.upbound.io/network-id" = _params.networkRef.id
             }
         }
         spec = {
@@ -48,7 +53,7 @@ _items = [
             forProvider = {
                 resourceGroupNameSelector = {
                     matchLabels = {
-                        "azure.platform.upbound.io/network-id" = oxr.spec.parameters.networkRef.id
+                        "azure.platform.upbound.io/network-id" = _params.networkRef.id
                     }
                 }
             }
@@ -57,24 +62,24 @@ _items = [
     networkv1beta1.PrivateDNSZoneVirtualNetworkLink {
         metadata = {
             **_metadata("privatednszonevnetlink")
-            name = "{}-mysql".format(oxr.spec.parameters.networkRef.id)
+            name = "{}-mysql".format(_params.networkRef.id)
         }
         spec = {
             **_defaultSpec
             forProvider = {
                 resourceGroupNameSelector = {
                     matchLabels = {
-                        "azure.platform.upbound.io/network-id" = oxr.spec.parameters.networkRef.id
+                        "azure.platform.upbound.io/network-id" = _params.networkRef.id
                     }
                 }
                 privateDnsZoneNameSelector = {
                     matchLabels = {
-                        "azure.platform.upbound.io/network-id" = oxr.spec.parameters.networkRef.id
+                        "azure.platform.upbound.io/network-id" = _params.networkRef.id
                     }
                 }
                 virtualNetworkIdSelector = {
                     matchLabels = {
-                        "azure.platform.upbound.io/network-id" = oxr.spec.parameters.networkRef.id
+                        "azure.platform.upbound.io/network-id" = _params.networkRef.id
                     }
                 }
             }
@@ -83,34 +88,34 @@ _items = [
     dbformysqlv1beta1.FlexibleServer {
         metadata = {
             **_metadata("mysqlserver")
-            name = "{}-mysql".format(oxr.spec.parameters.networkRef.id)
+            name = "{}-mysql".format(_params.networkRef.id)
         }
         spec = {
             **_defaultSpec
             forProvider = {
                 administratorLogin = "mysqladmin"
                 skuName = "GP_Standard_D2ds_v4"
-                location = oxr.spec.parameters.region
+                location = _params.region
                 administratorPasswordSecretRef = {
-                    key = oxr.spec.parameters.passwordSecretRef.key
-                    name = oxr.spec.parameters.passwordSecretRef.name
+                    key = _params.passwordSecretRef.key
+                    name = _params.passwordSecretRef.name
                 }
                 backupRetentionDays = 7
-                storage.sizeGb = oxr.spec.parameters.storageGB
+                storage.sizeGb = _params.storageGB
                 resourceGroupNameSelector = {
                     matchLabels = {
-                        "azure.platform.upbound.io/network-id" = oxr.spec.parameters.networkRef.id
+                        "azure.platform.upbound.io/network-id" = _params.networkRef.id
                     }
                 }
                 delegatedSubnetIdSelector = {
                     matchLabels = {
-                        "azure.platform.upbound.io/network-id" = oxr.spec.parameters.networkRef.id
+                        "azure.platform.upbound.io/network-id" = _params.networkRef.id
                         "azure.platform.upbound.io/subnet-service-type" = "mysql"
                     }
                 }
                 privateDnsZoneIdSelector = {
                     matchLabels = {
-                        "azure.platform.upbound.io/network-id" = oxr.spec.parameters.networkRef.id
+                        "azure.platform.upbound.io/network-id" = _params.networkRef.id
                     }
                 }
             }
@@ -135,7 +140,7 @@ _items = [
                 }
                 resourceGroupNameSelector = {
                     matchLabels = {
-                        "azure.platform.upbound.io/network-id" = oxr.spec.parameters.networkRef.id
+                        "azure.platform.upbound.io/network-id" = _params.networkRef.id
                     }
                 }
             }
