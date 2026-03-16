@@ -77,9 +77,45 @@ spec:
                           description: ID of the Network object this ref points to.
                       required:
                         - id
+                    publicNetworkAccess:
+                      type: string
+                      description: Whether public network access is allowed. Defaults to Disabled. Set to Enabled to allow provider-sql and external tools to connect.
+                      enum:
+                        - Enabled
+                        - Disabled
+                      default: Disabled
+                    firewallRules:
+                      type: array
+                      description: Firewall rules applied when publicNetworkAccess is Enabled. Defaults to the Azure-services rule (0.0.0.0-0.0.0.0).
+                      default:
+                        - name: allow-azure-services
+                          startIpAddress: "0.0.0.0"
+                          endIpAddress: "0.0.0.0"
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                          startIpAddress:
+                            type: string
+                          endIpAddress:
+                            type: string
+                        required:
+                          - name
+                          - startIpAddress
+                          - endIpAddress
                   required:
                     - storageGB
                     - passwordSecretRef
                     - version
               required:
                 - parameters
+            status:
+              type: object
+              properties:
+                endpoint:
+                  type: string
+                  description: FQDN of the provisioned database server. Published by Team Infrastructure as a stable XRD contract field.
+                port:
+                  type: string
+                  description: Port of the provisioned database server (3306 for MySQL, 5432 for PostgreSQL).

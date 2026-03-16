@@ -6,6 +6,7 @@ import base64
 
 oxr = option("params").oxr # observed composite resource
 ocds = option("params").ocds # observed composed resources
+_dxr = option("params").dxr # desired composite resource
 
 schema DefaultSpec:
     managementPolicies: [str]
@@ -154,4 +155,10 @@ _items = [
     }
 ]
 
-items = _items
+if "postgresqlserver" in ocds:
+    _dxr.status = {
+        endpoint = ocds["postgresqlserver"].Resource?.status?.atProvider?.fqdn or ""
+        port = "5432"
+    }
+
+items = _items + [_dxr]

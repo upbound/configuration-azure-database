@@ -1,0 +1,27 @@
+apiVersion: azure.platform.upbound.io/v1alpha1
+kind: SQLInstance
+metadata:
+  name: configuration-azure-database-db-mysql-public
+  namespace: default
+spec:
+  crossplane:
+    compositionSelector:
+      matchLabels:
+        dbengine: mysql
+  parameters:
+    region: westus
+    storageGB: 20
+    version: "8.0"
+    managementPolicies: ["*"]
+    passwordSecretRef:
+      name: psqlsecret
+      key: password
+    networkRef:
+      id: configuration-azure-database
+    publicNetworkAccess: Enabled
+    firewallRules:
+      - name: allow-azure-services
+        startIpAddress: "0.0.0.0"
+        endIpAddress: "0.0.0.0"
+  writeConnectionSecretToRef:
+    name: configuration-azure-database-db-conn-mysql-public

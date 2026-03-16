@@ -3,14 +3,18 @@ import models.io.upbound.azurem.network.v1beta1 as networkv1beta1
 import models.io.upbound.dev.meta.v1alpha1 as metav1alpha1
 import models.io.upbound.platform.azure.v1alpha1 as platformazurev1alpha1
 
+# Contract test: validates that enabling publicNetworkAccess on SQLInstance renders
+# a FlexibleServer with publicNetworkAccess=Enabled and the expected FirewallRule.
+# The default firewall rule (0.0.0.0-0.0.0.0) allows Azure services to connect,
+# enabling provider-sql to reach the MySQL FlexibleServer.
+
 _NETWORK_ID = "configuration-azure-database"
-_XR_NAME = "configuration-azure-database-db-mysql"
-_FQDN = "configuration-azure-database-mysql.mysql.database.azure.com"
+_XR_NAME = "configuration-azure-database-db-mysql-public"
 
 _items = [
     metav1alpha1.CompositionTest{
-        metadata.name: "mysql-flexibleserver"
-        spec= {
+        metadata.name: "mysql-flexibleserver-public"
+        spec = {
             assertResources: [
                 platformazurev1alpha1.SQLInstance{
                     metadata = {
@@ -18,7 +22,7 @@ _items = [
                         namespace = "default"
                     }
                     status = {
-                        endpoint = _FQDN
+                        endpoint = "configuration-azure-database-mysql.mysql.database.azure.com"
                         port = "3306"
                     }
                     spec = {
@@ -31,9 +35,13 @@ _items = [
                             region = "westus"
                             storageGB = 20
                             version = "8.0"
+                            publicNetworkAccess = "Enabled"
+                            firewallRules = [
+                                {name = "allow-azure-services", startIpAddress = "0.0.0.0", endIpAddress = "0.0.0.0"}
+                            ]
                         }
                         writeConnectionSecretToRef = {
-                            name = "{}-db-conn-mysql".format(_NETWORK_ID)
+                            name = "{}-db-conn-mysql-public".format(_NETWORK_ID)
                         }
                     }
                 }
@@ -109,7 +117,27 @@ _items = [
                             privateDnsZoneIdSelector = {
                                 matchLabels = {"azure.platform.upbound.io/network-id" = _NETWORK_ID}
                             }
-                            publicNetworkAccess = "Disabled"
+                            publicNetworkAccess = "Enabled"
+                        }
+                    }
+                }
+                dbformysqlv1beta1.FlexibleServerFirewallRule {
+                    metadata = {
+                        annotations = {
+                            "crossplane.io/composition-resource-name" = "firewallrule-allow-azure-services"
+                        }
+                        name = "{}-mysql-allow-azure-services".format(_NETWORK_ID)
+                    }
+                    spec = {
+                        forProvider = {
+                            startIpAddress = "0.0.0.0"
+                            endIpAddress = "0.0.0.0"
+                            serverNameSelector = {
+                                matchControllerRef = True
+                            }
+                            resourceGroupNameSelector = {
+                                matchLabels = {"azure.platform.upbound.io/network-id" = _NETWORK_ID}
+                            }
                         }
                     }
                 }
@@ -146,11 +174,11 @@ _items = [
                         name = "{}-mysql".format(_NETWORK_ID)
                     }
                     spec.forProvider.location = "westus"
-                    status.atProvider.fqdn = _FQDN
+                    status.atProvider.fqdn = "configuration-azure-database-mysql.mysql.database.azure.com"
                 }
             ]
             compositionPath: "apis/mysql/composition.yaml"
-            xrPath: "examples/mysql-xr.yaml"
+            xrPath: "examples/mysql-xr-public.yaml"
             xrdPath: "apis/definition.yaml"
             timeoutSeconds: 60
             validate: False

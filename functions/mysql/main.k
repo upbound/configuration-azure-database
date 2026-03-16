@@ -12,6 +12,7 @@ schema DefaultSpec:
 
 oxr = platformazurev1alpha1.SQLInstance {**option("params").oxr}
 ocds = option("params").ocds # observed composed resources
+_dxr = option("params").dxr # desired composite resource
 
 _metadata = lambda name: str -> any {
     {
@@ -30,6 +31,33 @@ _defaultSpec = DefaultSpec {
 }
 
 assert 20 <= oxr.spec.parameters.storageGB <= 16384, "storageGB supported values for MySQL FlexibleServer are between 20 and 16384"
+
+_public_network_access = oxr.spec.parameters?.publicNetworkAccess or "Disabled"
+_firewall_rule_defs = oxr.spec.parameters?.firewallRules or [{name = "allow-azure-services", startIpAddress = "0.0.0.0", endIpAddress = "0.0.0.0"}]
+
+_firewall_rules = [
+    dbformysqlv1beta1.FlexibleServerFirewallRule {
+        metadata = {
+            **_metadata("firewallrule-${rule.name}")
+            name = "{}-mysql-{}".format(oxr.spec.parameters.networkRef.id, rule.name)
+        }
+        spec = {
+            **_defaultSpec
+            forProvider = {
+                startIpAddress = rule.startIpAddress
+                endIpAddress = rule.endIpAddress
+                serverNameSelector = {
+                    matchControllerRef = True
+                }
+                resourceGroupNameSelector = {
+                    matchLabels = {
+                        "azure.platform.upbound.io/network-id" = oxr.spec.parameters.networkRef.id
+                    }
+                }
+            }
+        }
+    } for rule in _firewall_rule_defs
+] if _public_network_access == "Enabled" else []
 
 _items = [
     networkv1beta1.PrivateDNSZone {
@@ -113,12 +141,15 @@ _items = [
                         "azure.platform.upbound.io/network-id" = oxr.spec.parameters.networkRef.id
                     }
                 }
+                publicNetworkAccess = oxr.spec.parameters?.publicNetworkAccess or "Disabled"
             }
             writeConnectionSecretToRef = {
                 name = "{}-mysql".format(oxr.metadata.uid)
             }
         }
     }
+
+    *_firewall_rules
 
     dbformysqlv1beta1.FlexibleDatabase {
         metadata = {
@@ -154,11 +185,17 @@ _items = [
         if "mysqlserver" in ocds:
             data = {
                 username = base64.encode(ocds["mysqlserver"].Resource?.spec?.forProvider?.administratorLogin)
-                password = ocds["mysqlserver"].ConnectionDetails["attribute.administrator_password"]
+                password = ocds["mysqlserver"].ConnectionDetails?["attribute.administrator_password"] or base64.encode("")
                 host = base64.encode(ocds["mysqlserver"].Resource?.status?.atProvider?.fqdn)
                 port = base64.encode("3306")
             }
     }
 ]
 
-items = _items
+if "mysqlserver" in ocds:
+    _dxr.status = {
+        endpoint = ocds["mysqlserver"].Resource?.status?.atProvider?.fqdn or ""
+        port = "3306"
+    }
+
+items = _items + [_dxr]
