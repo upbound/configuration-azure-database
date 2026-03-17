@@ -35,31 +35,7 @@ assert 20 <= oxr.spec.parameters.storageGB <= 16384, "storageGB supported values
 _public_network_access = oxr.spec.parameters?.publicNetworkAccess or "Disabled"
 _firewall_rule_defs = oxr.spec.parameters?.firewallRules or [{name = "allow-azure-services", startIpAddress = "0.0.0.0", endIpAddress = "0.0.0.0"}]
 
-_firewall_rules = [
-    dbformysqlv1beta1.FlexibleServerFirewallRule {
-        metadata = {
-            **_metadata("firewallrule-${rule.name}")
-            name = "{}-mysql-{}".format(oxr.spec.parameters.networkRef.id, rule.name)
-        }
-        spec = {
-            **_defaultSpec
-            forProvider = {
-                startIpAddress = rule.startIpAddress
-                endIpAddress = rule.endIpAddress
-                serverNameSelector = {
-                    matchControllerRef = True
-                }
-                resourceGroupNameSelector = {
-                    matchLabels = {
-                        "azure.platform.upbound.io/network-id" = oxr.spec.parameters.networkRef.id
-                    }
-                }
-            }
-        }
-    } for rule in _firewall_rule_defs
-] if _public_network_access == "Enabled" else []
-
-_items = [
+_private_network_items = [
     networkv1beta1.PrivateDNSZone {
         metadata = {
             **_metadata("privatednszone")
@@ -108,6 +84,35 @@ _items = [
             }
         }
     }
+] if _public_network_access != "Enabled" else []
+
+_firewall_rules = [
+    dbformysqlv1beta1.FlexibleServerFirewallRule {
+        metadata = {
+            **_metadata("firewallrule-${rule.name}")
+            name = "{}-mysql-{}".format(oxr.spec.parameters.networkRef.id, rule.name)
+        }
+        spec = {
+            **_defaultSpec
+            forProvider = {
+                startIpAddress = rule.startIpAddress
+                endIpAddress = rule.endIpAddress
+                serverNameSelector = {
+                    matchControllerRef = True
+                }
+                resourceGroupNameSelector = {
+                    matchLabels = {
+                        "azure.platform.upbound.io/network-id" = oxr.spec.parameters.networkRef.id
+                    }
+                }
+            }
+        }
+    } for rule in _firewall_rule_defs
+] if _public_network_access == "Enabled" else []
+
+_items = [
+    *_private_network_items
+
     dbformysqlv1beta1.FlexibleServer {
         metadata = {
             **_metadata("mysqlserver")
@@ -130,18 +135,20 @@ _items = [
                         "azure.platform.upbound.io/network-id" = oxr.spec.parameters.networkRef.id
                     }
                 }
-                delegatedSubnetIdSelector = {
-                    matchLabels = {
-                        "azure.platform.upbound.io/network-id" = oxr.spec.parameters.networkRef.id
-                        "azure.platform.upbound.io/subnet-service-type" = "mysql"
+                **({
+                    delegatedSubnetIdSelector = {
+                        matchLabels = {
+                            "azure.platform.upbound.io/network-id" = oxr.spec.parameters.networkRef.id
+                            "azure.platform.upbound.io/subnet-service-type" = "mysql"
+                        }
                     }
-                }
-                privateDnsZoneIdSelector = {
-                    matchLabels = {
-                        "azure.platform.upbound.io/network-id" = oxr.spec.parameters.networkRef.id
+                    privateDnsZoneIdSelector = {
+                        matchLabels = {
+                            "azure.platform.upbound.io/network-id" = oxr.spec.parameters.networkRef.id
+                        }
                     }
-                }
-                publicNetworkAccess = oxr.spec.parameters?.publicNetworkAccess or "Disabled"
+                } if _public_network_access != "Enabled" else {})
+                publicNetworkAccess = _public_network_access
             }
             writeConnectionSecretToRef = {
                 name = "{}-mysql".format(oxr.metadata.uid)

@@ -1,5 +1,4 @@
 import models.io.upbound.azurem.dbformysql.v1beta1 as dbformysqlv1beta1
-import models.io.upbound.azurem.network.v1beta1 as networkv1beta1
 import models.io.upbound.dev.meta.v1alpha1 as metav1alpha1
 import models.io.upbound.platform.azure.v1alpha1 as platformazurev1alpha1
 
@@ -45,45 +44,6 @@ _items = [
                         }
                     }
                 }
-                networkv1beta1.PrivateDNSZone {
-                    metadata = {
-                        annotations = {
-                            "crossplane.io/external-name" = "{}.mysql.database.azure.com".format(_NETWORK_ID)
-                        }
-                        name = "{}-mysql".format(_NETWORK_ID)
-                        labels = {
-                            "azure.platform.upbound.io/network-id" = _NETWORK_ID
-                        }
-                    }
-                    spec = {
-                        forProvider = {
-                            resourceGroupNameSelector = {
-                                matchLabels = {"azure.platform.upbound.io/network-id" = _NETWORK_ID}
-                            }
-                        }
-                    }
-                }
-                networkv1beta1.PrivateDNSZoneVirtualNetworkLink {
-                    metadata = {
-                        annotations = {
-                            "crossplane.io/composition-resource-name" = "privatednszonevnetlink"
-                        }
-                        name = "{}-mysql".format(_NETWORK_ID)
-                    }
-                    spec = {
-                        forProvider = {
-                            resourceGroupNameSelector = {
-                                matchLabels = {"azure.platform.upbound.io/network-id" = _NETWORK_ID}
-                            }
-                            privateDnsZoneNameSelector = {
-                                matchLabels = {"azure.platform.upbound.io/network-id" = _NETWORK_ID}
-                            }
-                            virtualNetworkIdSelector = {
-                                matchLabels = {"azure.platform.upbound.io/network-id" = _NETWORK_ID}
-                            }
-                        }
-                    }
-                }
                 dbformysqlv1beta1.FlexibleServer {
                     metadata = {
                         annotations = {
@@ -106,15 +66,6 @@ _items = [
                             backupRetentionDays = 7
                             storage.sizeGb = 20
                             resourceGroupNameSelector = {
-                                matchLabels = {"azure.platform.upbound.io/network-id" = _NETWORK_ID}
-                            }
-                            delegatedSubnetIdSelector = {
-                                matchLabels = {
-                                    "azure.platform.upbound.io/network-id" = _NETWORK_ID
-                                    "azure.platform.upbound.io/subnet-service-type" = "mysql"
-                                }
-                            }
-                            privateDnsZoneIdSelector = {
                                 matchLabels = {"azure.platform.upbound.io/network-id" = _NETWORK_ID}
                             }
                             publicNetworkAccess = "Enabled"
