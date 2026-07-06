@@ -11,7 +11,7 @@ schema DefaultSpec:
     providerConfigRef: {str:str}
     forProvider: {str:str}
 
-oxr = platformazurev1alpha1.XSQLInstance {**option("params").oxr}
+oxr = option("params").oxr
 ocds = option("params").ocds # observed composed resources
 
 _metadata = lambda name: str -> any {
